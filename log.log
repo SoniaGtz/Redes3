@@ -1,10 +1,4 @@
-
-
-
-
-
-
-<190>59: *Apr  1 16:16:37.775: %SYS-6-LOGGINGHOST_STARTSTOP: Logging to host 50.0.0.2 port 514 started - CLI initiated
-<189>60: *Apr  1 16:16:46.083: %SYS-5-CONFIG_I: Configured from console by console
-<189>61: *Apr  1 16:19:26.751: %SYS-5-CONFIG_I: Configured from console by console
-<189>62: *Apr  1 16:23:12.823: %SYS-5-CONFIG_I: Configured from console by console
+<189>49: *Mar  1 00:19:21.507: %SYS-5-CONFIG_I: Configured from console by console
+<189>50: *Mar  1 00:20:38.171: %SYS-5-CONFIG_I: Configured from console by console
+<189>51: *Mar  1 00:23:10.639: %SYS-5-CONFIG_I: Configured from console by console
+<189>52: *Mar  1 00:23:43.819: %SYS-5-CONFIG_I: Configured from console by console
