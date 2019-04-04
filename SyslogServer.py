@@ -1,12 +1,12 @@
 LOG_FILE = 'log.log'
 HOST, PORT = "50.0.0.2", 514
-
 import logging
 import socketserver
 from Email import send_notification
+from sms import sendSms, countLines, checkLevelNot
 import subprocess
 
-niveles = ["Emergencia", "Alerta", "Crítico", "Error", "Advertencia", "Notificación", "Información", "Debugging"]
+niveles = ["Emergencia", "Alerta", "Critico", "Error", "Advertencia", "Notificacion", "Informacion", "Debugging"]
 
 logging.basicConfig(level=logging.DEBUG, format='%(message)s', datefmt='', filename=LOG_FILE, filemode='a')
 
@@ -26,9 +26,18 @@ def notificar_sistema(mensaje):
 def notificar(mensaje_syslog):
     mensaje = obtenerNivel(mensaje_syslog)
     notificar_sistema(mensaje)
+    if countLines() % 100 == 0:
+        checkLevelNot()
+        with open('NotifyNews.txt', 'r') as myfile:
+            data = myfile.read()
+            with open('log.log', 'r') as myfile2:
+                data2 = myfile2.read()
+            sendSms("New Alerts : " + data)
+            send_notification("alaidleonz@gmail.com", "Nuevas Alertas", "New Alerts : " + data + "\n Details:" + data2)
 
 
-#Comportamiento del servidor UDP que recibirá los logs
+
+#Comportamiento del servidor UDP que recibira los logs
 class SyslogUDPHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
@@ -37,6 +46,9 @@ class SyslogUDPHandler(socketserver.BaseRequestHandler):
         print( str(self.client_address[0]) + ": " + obtenerNivel(str(data)) + " -- " + str(data))
         notificar(str(data))
         logging.debug(str(data))
+
+
+
 
 
 if __name__ == "__main__":
