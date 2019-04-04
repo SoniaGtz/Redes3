@@ -1,5 +1,5 @@
 LOG_FILE = 'log.log'
-HOST, PORT = "50.0.0.2", 514
+HOST, PORT = "50.0.0.2", 2000
 import logging
 import socketserver
 from Email import send_notification
@@ -15,7 +15,12 @@ def obtenerNivel(mensaje_syslog):
     inicio = mensaje_syslog.find("<") + 1
     fin = mensaje_syslog.find(">")
     nivel = int(mensaje_syslog[inicio:fin]) % 8
-    return niveles[nivel]
+    fechaini = mensaje_syslog.find("*")
+    fechafin = fechaini + 19
+    fecha = mensaje_syslog[fechaini:fechafin]
+    descripcion = mensaje_syslog.split(":")[5]
+
+    return niveles[nivel] + ": " + fecha + ":" + descripcion
 
 #Notifica por sistema
 def notificar_sistema(mensaje):
@@ -23,17 +28,17 @@ def notificar_sistema(mensaje):
     subprocess.call(command, stdout=False)
 
 #Manda notificaciones por correo, sms y notifica por sistema
-def notificar(mensaje_syslog):
-    mensaje = obtenerNivel(mensaje_syslog)
+def notificar(mensaje_syslog, ip):
+    mensaje = ip + obtenerNivel(mensaje_syslog)
     notificar_sistema(mensaje)
-    if countLines() % 100 == 0:
+    if countLines() % 1 == 0:
         checkLevelNot()
         with open('NotifyNews.txt', 'r') as myfile:
             data = myfile.read()
             with open('log.log', 'r') as myfile2:
                 data2 = myfile2.read()
-            sendSms("New Alerts : " + data)
-            send_notification("alaidleonz@gmail.com", "Nuevas Alertas", "New Alerts : " + data + "\n Details:" + data2)
+            sendSms(mensaje)
+            send_notification("alaidleonz@gmail.com", "Nuevas Alertas", mensaje)
 
 
 
@@ -42,12 +47,10 @@ class SyslogUDPHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
         data = bytes.decode(self.request[0].strip())
+        logging.debug(str(self.client_address[0]) + ": " + obtenerNivel(str(data)))
         socket = self.request[1]
-        print( str(self.client_address[0]) + ": " + obtenerNivel(str(data)) + " -- " + str(data))
-        notificar(str(data))
-        logging.debug(str(data))
-
-
+        print( str(self.client_address[0]) + ": " + obtenerNivel(str(data)))
+        notificar(str(data), self.client_address[0])
 
 
 
