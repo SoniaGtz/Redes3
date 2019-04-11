@@ -10,7 +10,7 @@ niveles = ["Emergencia", "Alerta", "Critico", "Error", "Advertencia", "Notificac
 
 logging.basicConfig(level=logging.DEBUG, format='%(message)s', datefmt='', filename=LOG_FILE, filemode='a')
 
-#Obtiene el nivel del mensaje (0 a 7)
+#Obtiene el nivel del mensaje (0 a 7 )
 def obtenerNivel(mensaje_syslog):
     inicio = mensaje_syslog.find("<") + 1
     fin = mensaje_syslog.find(">")
